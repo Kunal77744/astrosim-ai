@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AstroSim AI — Interactive Gravitational Sandbox & AI STEM Tutor</title>
+    <!-- Google Fonts: Inter and Roboto Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-fontawesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Space Dust Effect -->
+    <div class="space-bg"></div>
+
+    <!-- Static Onboarding Tour Overlay (Eliminates Split-second Flicker) -->
+    <div class="tour-overlay" id="onboarding-tour-overlay">
+        <div class="tour-card">
+            <div class="tour-header">
+                <h2>🛰️ Welcome to AstroSim AI!</h2>
+            </div>
+            <div class="tour-body">
+                <p>Welcome, Mission Commander! Let's walk through your tools to study gravitational physics:</p>
+                <ol>
+                    <li><strong>Control Center (Left):</strong> Select presets, adjust masses, velocities, and choose which celestial body to spawn.</li>
+                    <li><strong>Space Viewport (Center):</strong> Click and drag anywhere to define a launch vector and spawn bodies into orbit.</li>
+                    <li><strong>AI Lab Partner (Right):</strong> Interact with Mission Control, get realtime updates, and speak directly to a tutor.</li>
+                    <li><strong>Math Blackboard (Tab 2):</strong> Track live equations with actual values changing at 60 frames per second.</li>
+                </ol>
+            </div>
+            <div class="tour-footer">
+                <button id="btn-close-tour" class="btn btn-primary">Start Mission</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="brand">
+                <i class="fa-solid fa-user-astronaut logo-icon"></i>
+                <div class="brand-text">
+                    <h1>AstroSim <span class="accent-text">AI</span></h1>
+                    <p class="tagline">Interactive Gravitational Sandbox & AI Lab Partner</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="btn-replay-tour" class="btn btn-secondary" title="Replay Onboarding Tour">
+                    <i class="fa-solid fa-circle-question"></i> Guide Tour
+                </button>
+                <button id="btn-toggle-voice" class="btn btn-secondary" title="Toggle AI Voice Guide">
+                    <i class="fa-solid fa-volume-high"></i> Voice: ON
+                </button>
+                <button id="btn-toggle-sound" class="btn btn-secondary" title="Toggle Sound Effects">
+                    <i class="fa-solid fa-music"></i> Sound: ON
+                </button>
+                <button id="btn-api-settings" class="btn btn-secondary">
+                    <i class="fa-solid fa-key"></i> API Settings
+                </button>
+                <div class="badge badge-online">
+                    <span class="pulse-dot"></span> Mission Control: ACTIVE
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <main class="app-main">
+            
+            <!-- LEFT PANEL: CONTROL CENTER -->
+            <section class="panel control-panel">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-sliders"></i> Control Center</h2>
+                </div>
+                <div class="panel-body scrollable">
+                    
+                    <!-- Spawning Controls -->
+                    <div class="control-group">
+                        <h3><i class="fa-solid fa-circle-plus"></i> Object Spawner</h3>
+                        <div class="spawner-tools">
+                            <button id="spawn-planet" class="btn btn-spawn active" data-type="planet">
+                                <i class="fa-solid fa-globe"></i> Planet
+                            </button>
+                            <button id="spawn-sun" class="btn btn-spawn" data-type="sun">
+                                <i class="fa-solid fa-sun text-yellow"></i> Sun
+                            </button>
+                            <button id="spawn-moon" class="btn btn-spawn" data-type="moon">
+                                <i class="fa-solid fa-moon text-blue"></i> Moon
+                            </button>
+                        </div>
+                        
+                        <div class="spawner-params">
+                            <div class="param-slider">
+                                <label for="object-mass">Mass (M): <span id="mass-val">100</span> kg</label>
+                                <input type="range" id="object-mass" min="1" max="10000" value="100">
+                            </div>
+                            <div class="param-slider">
+                                <label for="spawn-velocity">Initial Velocity (v): <span id="velocity-val">1.5</span> m/s</label>
+                                <input type="range" id="spawn-velocity" min="0" max="10" step="0.1" value="1.5">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guided Physics Labs -->
+                    <div class="control-group">
+                        <h3><i class="fa-solid fa-graduation-cap"></i> Guided Physics Labs</h3>
+                        <div class="labs-list">
+                            <button class="lab-card active" data-lab="kepler">
+                                <div class="lab-title">Lab 1: Kepler's Ellipse</div>
+                                <p class="lab-desc">Understand velocity acceleration at perihelion vs aphelion.</p>
+                            </button>
+                            <button class="lab-card" data-lab="slingshot">
+                                <div class="lab-title">Lab 2: Gravity Assist</div>
+                                <p class="lab-desc">Use a massive sun's gravitational pull to slingshot a rocket.</p>
+                            </button>
+                            <button class="lab-card" data-lab="binary">
+                                <div class="lab-title">Lab 3: Binary Stars</div>
+                                <p class="lab-desc">Watch two equal masses orbit a shared barycenter.</p>
+                            </button>
+                            <button class="lab-card" data-lab="lagrange">
+                                <div class="lab-title">Lab 4: Lagrange Points</div>
+                                <p class="lab-desc">Explore points where gravitational forces cancel out.</p>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Simulation Parameters -->
+                    <div class="control-group">
+                        <h3><i class="fa-solid fa-gauge-high"></i> Simulation Config</h3>
+                        <div class="config-actions">
+                            <button id="btn-play-pause" class="btn btn-primary btn-block">
+                                <i class="fa-solid fa-pause"></i> Pause Simulation
+                            </button>
+                            <button id="btn-clear" class="btn btn-danger btn-block">
+                                <i class="fa-solid fa-trash-can"></i> Clear Sandbox
+                            </button>
+                        </div>
+                        
+                        <div class="param-slider mt-3">
+                            <label for="sim-speed">Simulation Speed: <span id="speed-val">1.0</span>x</label>
+                            <input type="range" id="sim-speed" min="0.1" max="5.0" step="0.1" value="1.0">
+                        </div>
+
+                        <div class="checkbox-options mt-3">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="show-trails" checked>
+                                <span class="checkmark"></span> Show Orbit Trails
+                            </label>
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="show-vectors" checked>
+                                <span class="checkmark"></span> Render Force Vectors
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- CENTER PANEL: SPACE VIEWPORT -->
+            <section class="space-viewport">
+                <!-- Sandbox HUD -->
+                <div class="viewport-hud top-hud">
+                    <div class="hud-item">
+                        <span class="hud-label">Active Lab</span>
+                        <span id="hud-active-lab" class="hud-value">Lab 1: Kepler's Ellipse</span>
+                    </div>
+                    <div class="hud-item">
+                        <span class="hud-label">Bodies</span>
+                        <span id="hud-bodies-count" class="hud-value">2</span>
+                    </div>
+                    <div class="hud-item">
+                        <span class="hud-label">G-Constant</span>
+                        <span class="hud-value">6.674 &times; 10<sup>-11</sup></span>
+                    </div>
+                </div>
+
+                <canvas id="space-canvas"></canvas>
+
+                <div class="viewport-hud bottom-hud">
+                    <div class="hud-tip">
+                        <i class="fa-solid fa-circle-info"></i> Click on space to launch a body with the direction of the vector.
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT PANEL: AI TUTOR & MATH BLACKBOARD -->
+            <section class="panel tutor-panel">
+                
+                <!-- AI Chat Tab Header -->
+                <div class="panel-tabs">
+                    <button class="tab-btn active" data-tab="ai-tutor">
+                        <i class="fa-solid fa-brain"></i> AI Lab Partner
+                    </button>
+                    <button class="tab-btn" data-tab="math-board">
+                        <i class="fa-solid fa-square-root-variable"></i> Math Blackboard
+                    </button>
+                </div>
+
+                <div class="panel-body flex-container">
+                    
+                    <!-- TAB 1: AI TUTOR CHAT ROOM -->
+                    <div id="tab-ai-tutor" class="tab-content active-content">
+                        <!-- Chat Message Thread -->
+                        <div class="chat-thread scrollable" id="chat-messages">
+                            <!-- AI Greeting Message -->
+                            <div class="message message-ai">
+                                <div class="message-sender">
+                                    <i class="fa-solid fa-satellite-dish"></i> Mission Control AI
+                                </div>
+                                <div class="message-text">
+                                    Welcome, Mission Commander! I am your AI Lab Partner. 
+                                    <br><br>
+                                    We are currently studying <strong>Lab 1: Kepler's Elliptic Orbits</strong>. Look at the simulator: I have set up a planet orbiting a massive Sun. 
+                                    <br><br>
+                                    Observe how the planet speeds up as it gets closer to the Sun. Why do you think that happens? Try asking me or spawn another planet to compare!
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Chat Suggestions / Prompts -->
+                        <div class="chat-suggestions">
+                            <button class="suggestion-btn">Why does it speed up close to the Sun?</button>
+                            <button class="suggestion-btn">What are Kepler's three laws?</button>
+                            <button class="suggestion-btn">Give me a challenge mission!</button>
+                        </div>
+
+                        <!-- Chat input bar -->
+                        <div class="chat-input-container">
+                            <input type="text" id="chat-input" placeholder="Ask your AI Lab Partner a STEM question...">
+                            <button id="chat-send-btn" class="btn btn-primary">
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: MATH BLACKBOARD -->
+                    <div id="tab-math-board" class="tab-content">
+                        <div class="blackboard-container scrollable">
+                            <h3><i class="fa-solid fa-chalkboard"></i> Real-time Gravitational Mechanics</h3>
+                            <p class="blackboard-intro">Below are the live calculations computed by our physics engine inside the sandbox right now.</p>
+                            
+                            <!-- Formula Cards -->
+                            <div class="math-card">
+                                <div class="math-title">Newton's Law of Universal Gravitation</div>
+                                <div class="math-formula">
+                                    \[F_g = G \frac{M_1 \cdot M_2}{r^2}\]
+                                </div>
+                                <div class="math-live-values">
+                                    <strong>Live Computation (Active Pair):</strong>
+                                    <div id="calc-fg" class="mono-font">Select objects or let simulation run...</div>
+                                </div>
+                            </div>
+
+                            <div class="math-card">
+                                <div class="math-title">Gravitational Acceleration</div>
+                                <div class="math-formula">
+                                    \[g = G \frac{M_{central}}{r^2}\]
+                                </div>
+                                <div class="math-live-values">
+                                    <strong>Local Acceleration Vector:</strong>
+                                    <div id="calc-g" class="mono-font">Calculating...</div>
+                                </div>
+                            </div>
+
+                            <div class="math-card">
+                                <div class="math-title">Orbital Velocity Formula</div>
+                                <div class="math-formula">
+                                    \[v = \sqrt{\frac{G \cdot M_{central}}{r}}\]
+                                </div>
+                                <div class="math-live-values">
+                                    <strong>Theoretical circular velocity vs. Actual:</strong>
+                                    <div id="calc-v" class="mono-font">Calculating...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- SETTINGS MODAL (Gemini API Configuration) -->
+    <div class="modal-backdrop" id="api-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-gears"></i> Gemini API Configurations</h2>
+                <button class="modal-close" id="btn-close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>By default, AstroSim AI uses a sophisticated local educational rule-engine to act as your tutor. Enter a **Gemini API Key** to enable fully dynamic, intelligent AI responses that scan your simulation setup dynamically.</p>
+                
+                <div class="form-group">
+                    <label for="gemini-key">Gemini API Key</label>
+                    <input type="password" id="gemini-key" placeholder="AIzaSy...">
+                    <small>Your key is stored locally in your browser memory and never sent to any server other than Google's Gemini API endpoints.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-save-api" class="btn btn-primary">Save Configs</button>
+                <button id="btn-clear-api" class="btn btn-secondary">Use Offline Mock Mode</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <!-- MathJax for rendering gorgeous math equations dynamically -->
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>
