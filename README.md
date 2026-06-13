@@ -2,7 +2,7 @@
 
 AstroSim AI is an interactive 2D orbital mechanics simulator and a voice-guided AI STEM tutor designed to teach students orbital physics, Kepler's laws, and Newtonian gravitation in an immersive and gamified dashboard environment.
 
-🌌 **Live Demo:** [Insert your Vercel Link Here]
+🌌 **Live Demo:** [(https://astrosim-ai.vercel.app/)]
 
 ---
 
